@@ -100,7 +100,7 @@ const getCodeFormat = (value = {}) => {
   const suffix = value?.suffix ? `-${value?.suffix.toUpperCase()}` : '';
 
   return value?.prefix || value?.suffix
-    ? `${prefix}${generateRandomString().toUpperCase()}${suffix}`
+    ? `${prefix}XXXXX${suffix}`
     : value.code.toUpperCase();
 };
 
@@ -109,18 +109,19 @@ export default function App() {
     {
       amount: 100,
       data: [
-        [13, 'Supporting Organisation | Blockchain at HKU'],
-        [0, { code: 'HKU-DISCOUNT' }],
+        [13, 'AHUB Promo'],
+        [0, { prefix: 'AHUB', suffix: '15' }],
         [1, 'Percent'],
         [2, '15%'],
         [6, '1'],
         [7, '2'],
         [3, '50'],
-        [23, 'Y'],
+        [34, 'Y'],
+        [17, 'Y'],
       ],
     },
     {
-      amount: 100,
+      amount: 1,
       data: [
         [13, 'Supporting Organisation | Blockchain at HKU'],
         [0, { code: 'HKU-DISCOUNT' }],
@@ -166,7 +167,7 @@ export default function App() {
           <thead>
             <tr>
               <th scope="col">Format</th>
-              <th scope="col">Amount</th>
+              <th scope="col">Number Of Code To Generate</th>
               <th scope="col">Discount Type</th>
               <th scope="col">Discount Amount</th>
               <th scope="col">Max Redeemable</th>
@@ -270,7 +271,7 @@ export default function App() {
           <div className="row">
             <div className="mb-2 col-12 col-md-4">
               <label htmlFor="amount" className="form-label">
-                Amount
+                Number Of Code To Generate
               </label>
               <Field
                 id="amount"

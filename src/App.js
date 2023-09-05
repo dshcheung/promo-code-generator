@@ -1,4 +1,46 @@
 import React, { useState } from 'react';
+import { saveAs } from 'file-saver';
+
+const HEADERS = [
+  'Code*', // 0
+  'Type [Flat|Percent]*', // 1
+  'Value*', // 2
+  'Quantity', // 3
+  'Available From', // 4
+  'Available To', // 5
+  'Min. Tickets', // 6
+  'Max. Tickets', // 7
+  'Show Public Tickets', // 8
+  'Show Secret Tickets', // 9
+  'Source Code', // 10
+  'Disable If Volume Pricing', // 11
+  'Block Orders If Not Applicable', // 12
+  'Description for Organizer', // 13
+  'VIP Networking', // 14
+  'General Attendee (Super Early Bird)', // 15
+  'General Attendee (Early Bird)', // 16
+  'General Attendee', // 17
+  'General Attendee + GBA Day (Super Early Bird)', // 18
+  'General Attendee + GBA Day (Early Bird)', // 19
+  'General Attendee + GBA Day', // 20
+  'Greater Bay Area (GBA) Day + Startup Kiosk', // 21
+  'Greater Bay Area (GBA) Day', // 22
+  'Startup Online (with virtual booth) (Super Early Bird)', // 23
+  'Startup Online (with virtual booth) (Early Bird)', // 24
+  'Startup Online (with virtual booth)', // 25
+  'Startup Kiosk (+2 tickets) (Super Early Bird)', // 26
+  'Startup Kiosk (+2 tickets) (Early Bird)', // 27
+  'Startup Kiosk (+2 tickets)', // 28
+  'Investor (Super Early Bird)', // 29
+  'Investor (Early Bird)', // 30
+  'Investor', // 31
+  'Student (Super Early Bird)', // 32
+  'Student (Early Bird)', // 33
+  'Student', // 34
+  'General Attendee (Online only) (Super Early Bird)', // 35
+  'General Attendee (Online only) Early Bird', // 36
+  'General Attendee (Online only)', // 37
+];
 
 const generateRandomString = () => {
   const randomString = Math.random().toString(36).substring(2, 7);
@@ -79,6 +121,29 @@ export default function App() {
     },
   ]);
 
+  const onDownload = () => {
+    const csvCollection = [];
+
+    items.forEach((item) => {
+      if (item.amount > 1) {
+        for (let i = 0; i < item.amount; i += 1) {
+          csvCollection.push(item.data);
+        }
+      } else {
+        csvCollection.push(item.data);
+      }
+    });
+
+    const blob = new Blob([generateCSVCollection(csvCollection)]);
+    saveAs(blob, 'codes.csv');
+  };
+
+  const onClear = () => {
+    if (window.confirm('Are you sure you want to clear?')) {
+      setItems([]);
+    }
+  };
+
   return (
     <div className="container-fluid my-3">
       <div className="table-responsive">
@@ -116,14 +181,21 @@ export default function App() {
 
       <div className="text-center">
         <div class="btn-group">
-          <button type="button" class="btn btn-primary">
+          <button
+            type="button"
+            class="btn btn-primary"
+            onClick={onDownload}
+            disabled={items.length === 0}
+          >
             Download
           </button>
-          <button type="button" class="btn btn-danger">
+          <button type="button" class="btn btn-danger" onClick={onClear}>
             Clear
           </button>
         </div>
       </div>
+
+      <div className="border-top my-3"></div>
     </div>
   );
 }

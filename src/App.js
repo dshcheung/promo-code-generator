@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { saveAs } from 'file-saver';
+import { Formik, Field, Form } from 'formik';
 
 const HEADERS = [
   'Code*', // 0
@@ -156,19 +157,21 @@ export default function App() {
     }
   };
 
+  const onSubmit = (values) => {};
+
   return (
     <div className="container-fluid my-3">
-      <div className="table-responsive">
+      <div className="table-responsive my-3">
         <table className="table table-striped table-bordered table-sm align-middle">
           <thead>
             <tr>
-              <th scope="col">Amount</th>
               <th scope="col">Format</th>
+              <th scope="col">Amount</th>
               <th scope="col">Discount Type</th>
               <th scope="col">Discount Amount</th>
               <th scope="col">Max Redeemable</th>
-              <th scope="col">Min Purchase</th>
-              <th scope="col">Max Purchase</th>
+              <th scope="col">Min Per Purchase</th>
+              <th scope="col">Max Per Purchase</th>
               <th scope="col">Tickets</th>
               <th scope="col">Description</th>
             </tr>
@@ -177,11 +180,11 @@ export default function App() {
             {items.map((item, i) => {
               return (
                 <tr key={i}>
-                  <td scope="row">{item.amount}</td>
-                  <td>{getItemData(item.data, 1)?.[1]}</td>
                   <td className="text-nowrap">
                     {getCodeFormat(getItemData(item.data, 0)?.[1])}
                   </td>
+                  <td scope="row">{item.amount}</td>
+                  <td>{getItemData(item.data, 1)?.[1]}</td>
                   <td>{getItemData(item.data, 2)?.[1]}</td>
                   <td>{getItemData(item.data, 3)?.[1]}</td>
                   <td>{getItemData(item.data, 6)?.[1]}</td>
@@ -203,7 +206,7 @@ export default function App() {
         </table>
       </div>
 
-      <div className="text-center">
+      <div className="text-center my-3">
         <div class="btn-group">
           <button
             type="button"
@@ -220,6 +223,180 @@ export default function App() {
       </div>
 
       <div className="border-top my-3"></div>
+
+      <Formik initialValues={{ amount: 1 }} onSubmit={onSubmit}>
+        <Form>
+          <div className="row">
+            <div className="mb-2 col-12 col-md-4">
+              <label htmlFor="prefix" className="form-label">
+                Prefix
+              </label>
+              <Field
+                id="prefix"
+                name="prefix"
+                className="form-control"
+                type="text"
+                placeholder="[Prefix]-xxxxx"
+              />
+            </div>
+
+            <div className="mb-2 col-12 col-md-4">
+              <label htmlFor="suffix" className="form-label">
+                Suffix
+              </label>
+              <Field
+                id="suffix"
+                name="suffix"
+                className="form-control"
+                type="text"
+                placeholder="xxxxx-[Suffix]"
+              />
+            </div>
+
+            <div className="mb-2 col-12 col-md-4">
+              <label htmlFor="code" className="form-label">
+                Code
+              </label>
+              <Field
+                id="code"
+                name="code"
+                className="form-control"
+                type="text"
+                placeholder="Override Code Regardless of Prefix or Suffix"
+              />
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="mb-2 col-12 col-md-4">
+              <label htmlFor="amount" className="form-label">
+                Amount
+              </label>
+              <Field
+                id="amount"
+                name="amount"
+                className="form-control"
+                type="number"
+              />
+            </div>
+
+            <div className="mb-2 col-12 col-md-4">
+              <label htmlFor="discountType" className="form-label">
+                Discount Type
+              </label>
+              <Field
+                id="discountType"
+                name="discountType"
+                className="form-control"
+                component="select"
+              >
+                <option value="Percent">Percent</option>
+                <option value="Flat">Flat</option>
+              </Field>
+            </div>
+
+            <div className="mb-2 col-12 col-md-4">
+              <label htmlFor="discountAmount" className="form-label">
+                Discount Amount
+              </label>
+              <Field
+                id="discountAmount"
+                name="discountAmount"
+                className="form-control"
+                type="number"
+              />
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="mb-2 col-12 col-md-4">
+              <label htmlFor="redeemable" className="form-label">
+                Max Redeemable
+              </label>
+              <Field
+                id="redeemable"
+                name="redeemable"
+                className="form-control"
+                type="number"
+                placeholder="Leave Blank For No Limit"
+              />
+            </div>
+
+            <div className="mb-2 col-12 col-md-4">
+              <label htmlFor="minPurchase" className="form-label">
+                Min Per Purchase
+              </label>
+              <Field
+                id="minPurchase"
+                name="minPurchase"
+                className="form-control"
+                type="number"
+              />
+            </div>
+
+            <div className="mb-2 col-12 col-md-4">
+              <label htmlFor="maxPurchase" className="form-label">
+                Max Per Purchase
+              </label>
+              <Field
+                id="maxPurchase"
+                name="maxPurchase"
+                className="form-control"
+                type="number"
+              />
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="mb-2 col-12">
+              <label htmlFor="description" className="form-label">
+                Description
+              </label>
+              <Field
+                id="description"
+                name="description"
+                className="form-control"
+                type="text"
+                placeholder="Any Title/Notes/Description For Internal Tracking"
+              />
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="mb-2 col-12">
+              <label htmlFor="tickets" className="form-label">
+                Tickets (Hold Control To Select Multiple)
+              </label>
+              <Field
+                id="tickets"
+                name="tickets"
+                className="form-control"
+                component="select"
+                multiple
+              >
+                <option value="14">VIP Networking</option>
+                <option value="31">Investor</option>
+                <option value="34">Student</option>
+                <option value="17">General Attendee</option>
+                <option value="37">General Attendee (Online only)</option>
+                <option value="20">General Attendee + GBA Day</option>
+                <option value="22">Greater Bay Area (GBA) Day</option>
+                <option value="21">
+                  Greater Bay Area (GBA) Day + Startup Kiosk
+                </option>
+                <option value="28">Startup Kiosk (+2 tickets)</option>
+                <option value="25">Startup Online (with virtual booth)</option>
+              </Field>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <button type="submit" className="btn btn-primary">
+              Add
+            </button>
+          </div>
+        </Form>
+      </Formik>
     </div>
   );
 }

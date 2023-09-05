@@ -82,6 +82,18 @@ const getItemData = (data, index) => {
   return data.find(([i]) => index === i);
 };
 
+const getTicketTypes = (data) => {
+  const tickets = [];
+
+  data.forEach(([index]) => {
+    if (index >= 14 && index <= 37) {
+      tickets.push(HEADERS[index]);
+    }
+  });
+
+  return tickets;
+};
+
 const getCodeFormat = (value = {}) => {
   const prefix = value?.prefix ? `${value?.prefix.toUpperCase()}-` : '';
   const suffix = value?.suffix ? `-${value?.suffix.toUpperCase()}` : '';
@@ -103,7 +115,7 @@ export default function App() {
         [6, '1'],
         [7, '2'],
         [3, '50'],
-        [17, 'Y'],
+        [23, 'Y'],
       ],
     },
     {
@@ -152,11 +164,12 @@ export default function App() {
             <tr>
               <th scope="col">Amount</th>
               <th scope="col">Format</th>
-              <th scope="col">DisType</th>
-              <th scope="col">DisAmount</th>
-              <th scope="col">Redeemable</th>
-              <th scope="col">Min/Purchase</th>
-              <th scope="col">Max/Purchase</th>
+              <th scope="col">Discount Type</th>
+              <th scope="col">Discount Amount</th>
+              <th scope="col">Max Redeemable</th>
+              <th scope="col">Min Purchase</th>
+              <th scope="col">Max Purchase</th>
+              <th scope="col">Tickets</th>
               <th scope="col">Description</th>
             </tr>
           </thead>
@@ -166,11 +179,22 @@ export default function App() {
                 <tr key={i}>
                   <td scope="row">{item.amount}</td>
                   <td>{getItemData(item.data, 1)?.[1]}</td>
-                  <td>{getCodeFormat(getItemData(item.data, 0)?.[1])}</td>
+                  <td className="text-nowrap">
+                    {getCodeFormat(getItemData(item.data, 0)?.[1])}
+                  </td>
                   <td>{getItemData(item.data, 2)?.[1]}</td>
                   <td>{getItemData(item.data, 3)?.[1]}</td>
                   <td>{getItemData(item.data, 6)?.[1]}</td>
                   <td>{getItemData(item.data, 7)?.[1]}</td>
+                  <td>
+                    <ul className="list-group">
+                      {getTicketTypes(item.data)?.map((name, i) => (
+                        <li key={i} className="list-group-item text-nowrap">
+                          {name}
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
                   <td>{getItemData(item.data, 13)?.[1]}</td>
                 </tr>
               );

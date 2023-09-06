@@ -101,39 +101,11 @@ const getCodeFormat = (value = {}) => {
 
   return value?.prefix || value?.suffix
     ? `${prefix}XXXXX${suffix}`
-    : value.code.toUpperCase();
+    : value.code?.toUpperCase();
 };
 
 export default function App() {
-  const [items, setItems] = useState([
-    {
-      amount: 100,
-      data: [
-        [13, 'AHUB Promo'],
-        [0, { prefix: 'AHUB', suffix: '15' }],
-        [1, 'Percent'],
-        [2, '15%'],
-        [6, '1'],
-        [7, '2'],
-        [3, '50'],
-        [34, 'Y'],
-        [17, 'Y'],
-      ],
-    },
-    {
-      amount: 1,
-      data: [
-        [13, 'Supporting Organisation | Blockchain at HKU'],
-        [0, { code: 'HKU-DISCOUNT' }],
-        [1, 'Percent'],
-        [2, '15%'],
-        [6, '1'],
-        [7, '2'],
-        [3, '50'],
-        [17, 'Y'],
-      ],
-    },
-  ]);
+  const [items, setItems] = useState([]);
 
   const onDownload = () => {
     const csvCollection = [];
@@ -158,7 +130,41 @@ export default function App() {
     }
   };
 
-  const onSubmit = (values) => {};
+  const onSubmit = (values, formikBags) => {
+    const newData = { amount: values.amount, data: [] };
+
+    if (values.description) newData.data.push([13, values.description]);
+    if (values.prefix || values.suffix || values.code) {
+      newData.data.push([
+        0,
+        { code: values.code, prefix: values.prefix, suffix: values.suffix },
+      ]);
+    }
+    if (values.discountType) newData.data.push([1, values.discountType]);
+    if (values.discountAmount) {
+      newData.data.push([
+        2,
+        `${values.discountAmount}${
+          values.discountType === 'Percent' ? '%' : ''
+        }`,
+      ]);
+    }
+    if (values.redeemable) newData.data.push([3, `${values.redeemable}`]);
+    if (values.minPurchase) newData.data.push([6, `${values.minPurchase}`]);
+    if (values.maxPurchase) newData.data.push([7, `${values.maxPurchase}`]);
+    values.tickets?.forEach((ticketIndex) => {
+      newData.data.push([ticketIndex, 'Y']);
+    });
+
+    setItems((currItems) => {
+      return [...currItems, newData];
+    });
+
+    formikBags.resetForm();
+  };
+
+  // TODO: Validation
+  // TODO: Remove Item
 
   return (
     <div className="container-fluid my-3">
@@ -208,16 +214,16 @@ export default function App() {
       </div>
 
       <div className="text-center my-3">
-        <div class="btn-group">
+        <div className="btn-group">
           <button
             type="button"
-            class="btn btn-primary"
+            className="btn btn-primary"
             onClick={onDownload}
             disabled={items.length === 0}
           >
             Download
           </button>
-          <button type="button" class="btn btn-danger" onClick={onClear}>
+          <button type="button" className="btn btn-danger" onClick={onClear}>
             Clear
           </button>
         </div>
@@ -225,7 +231,22 @@ export default function App() {
 
       <div className="border-top my-3"></div>
 
-      <Formik initialValues={{ amount: 1 }} onSubmit={onSubmit}>
+      <Formik
+        initialValues={{
+          prefix: '',
+          suffix: '',
+          code: '',
+          amount: 1,
+          discountType: 'Percent',
+          discountAmount: 0,
+          redeemable: 0,
+          minPurchase: 0,
+          maxPurchase: 0,
+          description: '',
+          tickets: [],
+        }}
+        onSubmit={onSubmit}
+      >
         <Form>
           <div className="row">
             <div className="mb-2 col-12 col-md-4">
@@ -312,7 +333,7 @@ export default function App() {
           <div className="row">
             <div className="mb-2 col-12 col-md-4">
               <label htmlFor="redeemable" className="form-label">
-                Max Redeemable
+                Max Redeemable (Use 0 for no restrictions)
               </label>
               <Field
                 id="redeemable"
@@ -325,7 +346,7 @@ export default function App() {
 
             <div className="mb-2 col-12 col-md-4">
               <label htmlFor="minPurchase" className="form-label">
-                Min Per Purchase
+                Min Per Purchase (Use 0 for no restrictions)
               </label>
               <Field
                 id="minPurchase"
@@ -337,7 +358,7 @@ export default function App() {
 
             <div className="mb-2 col-12 col-md-4">
               <label htmlFor="maxPurchase" className="form-label">
-                Max Per Purchase
+                Max Per Purchase (Use 0 for no restrictions)
               </label>
               <Field
                 id="maxPurchase"

@@ -163,74 +163,23 @@ export default function App() {
     formikBags.resetForm();
   };
 
+  const onItemDelete = (index) => {
+    if (window.confirm('Are you sure you want to delete item?')) {
+      const newItems = [...items];
+      newItems.splice(index, 1);
+      setItems(newItems);
+    }
+  };
+
+  const onItemCopy = (item) => {
+    console.log(item);
+  };
+
   // TODO: Validation
-  // TODO: Remove Item
+  // TODO: Dup Item to Form
 
   return (
     <div className="container-fluid my-3">
-      <div className="table-responsive my-3">
-        <table className="table table-striped table-bordered table-sm align-middle">
-          <thead>
-            <tr>
-              <th scope="col">Format</th>
-              <th scope="col">Number Of Code To Generate</th>
-              <th scope="col">Discount Type</th>
-              <th scope="col">Discount Amount</th>
-              <th scope="col">Max Redeemable</th>
-              <th scope="col">Min Per Purchase</th>
-              <th scope="col">Max Per Purchase</th>
-              <th scope="col">Tickets</th>
-              <th scope="col">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, i) => {
-              return (
-                <tr key={i}>
-                  <td className="text-nowrap">
-                    {getCodeFormat(getItemData(item.data, 0)?.[1])}
-                  </td>
-                  <td scope="row">{item.amount}</td>
-                  <td>{getItemData(item.data, 1)?.[1]}</td>
-                  <td>{getItemData(item.data, 2)?.[1]}</td>
-                  <td>{getItemData(item.data, 3)?.[1]}</td>
-                  <td>{getItemData(item.data, 6)?.[1]}</td>
-                  <td>{getItemData(item.data, 7)?.[1]}</td>
-                  <td>
-                    <ul className="list-group">
-                      {getTicketTypes(item.data)?.map((name, i) => (
-                        <li key={i} className="list-group-item text-nowrap">
-                          {name}
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-                  <td>{getItemData(item.data, 13)?.[1]}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="text-center my-3">
-        <div className="btn-group">
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={onDownload}
-            disabled={items.length === 0}
-          >
-            Download
-          </button>
-          <button type="button" className="btn btn-danger" onClick={onClear}>
-            Clear
-          </button>
-        </div>
-      </div>
-
-      <div className="border-top my-3"></div>
-
       <Formik
         initialValues={{
           prefix: '',
@@ -387,7 +336,7 @@ export default function App() {
           <div className="row">
             <div className="mb-2 col-12">
               <label htmlFor="tickets" className="form-label">
-                Tickets (Hold Control To Select Multiple)
+                Tickets (Hold Control/Command To Select Multiple)
               </label>
               <Field
                 id="tickets"
@@ -419,6 +368,88 @@ export default function App() {
           </div>
         </Form>
       </Formik>
+
+      <div className="border-top my-3"></div>
+
+      <div className="table-responsive my-3">
+        <table className="table table-striped table-bordered table-sm align-middle">
+          <thead>
+            <tr>
+              <th></th>
+              <th scope="col">Format</th>
+              <th scope="col">Number Of Code To Generate</th>
+              <th scope="col">Discount Type</th>
+              <th scope="col">Discount Amount</th>
+              <th scope="col">Max Redeemable</th>
+              <th scope="col">Min Per Purchase</th>
+              <th scope="col">Max Per Purchase</th>
+              <th scope="col">Tickets</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((item, i) => {
+              return (
+                <tr key={i}>
+                  <td scope="row">
+                    <div className="btn-group">
+                      <button
+                        className="btn btn-sm btn-primary"
+                        type="button"
+                        onClick={() => onItemCopy(item)}
+                      >
+                        <i className="bi bi-clipboard"></i>
+                      </button>
+                      <button
+                        className="btn btn-sm btn-danger"
+                        type="button"
+                        onClick={() => onItemDelete(i)}
+                      >
+                        <i className="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                  <td className="text-nowrap">
+                    {getCodeFormat(getItemData(item.data, 0)?.[1])}
+                  </td>
+                  <td>{item.amount}</td>
+                  <td>{getItemData(item.data, 1)?.[1]}</td>
+                  <td>{getItemData(item.data, 2)?.[1]}</td>
+                  <td>{getItemData(item.data, 3)?.[1]}</td>
+                  <td>{getItemData(item.data, 6)?.[1]}</td>
+                  <td>{getItemData(item.data, 7)?.[1]}</td>
+                  <td>
+                    <ul className="list-group">
+                      {getTicketTypes(item.data)?.map((name, i) => (
+                        <li key={i} className="list-group-item text-nowrap">
+                          {name}
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td>{getItemData(item.data, 13)?.[1]}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="text-center my-3">
+        <div className="btn-group">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={onDownload}
+            disabled={items.length === 0}
+          >
+            Download
+          </button>
+          <button type="button" className="btn btn-danger" onClick={onClear}>
+            Clear
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

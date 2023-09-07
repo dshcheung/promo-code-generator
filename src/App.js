@@ -106,6 +106,7 @@ const getCodeFormat = (value = {}) => {
 
 export default function App() {
   const [items, setItems] = useState([]);
+  const [dup, setDup] = useState(null);
 
   const onDownload = () => {
     const csvCollection = [];
@@ -126,6 +127,7 @@ export default function App() {
 
   const onClear = () => {
     if (window.confirm('Are you sure you want to clear?')) {
+      setDup(null);
       setItems([]);
     }
   };
@@ -156,6 +158,7 @@ export default function App() {
       newData.data.push([ticketIndex, 'Y']);
     });
 
+    setDup(null);
     setItems((currItems) => {
       return [...currItems, newData];
     });
@@ -172,29 +175,59 @@ export default function App() {
   };
 
   const onItemCopy = (item) => {
-    console.log(item);
+    const newDup = {
+      prefix: '',
+      suffix: '',
+      code: '',
+      amount: item.amount,
+      discountType: 'Percent',
+      discountAmount: 0,
+      redeemable: 0,
+      minPurchase: 0,
+      maxPurchase: 0,
+      description: '',
+      tickets: [],
+    };
+
+    item.data.forEach(([i, v]) => {
+      if (i === 13) newDup.description = v || '';
+      if (i === 0) {
+        newDup.prefix = v.prefix || '';
+        newDup.suffix = v.suffix || '';
+        newDup.code = v.code || '';
+      }
+      if (i === 1) newDup.discountType = v;
+      if (i === 2) newDup.discountAmount = v?.replace('%', '');
+      if (i === 3) newDup.redeemable = v;
+      if (i === 6) newDup.minPurchase = v;
+      if (i === 7) newDup.maxPurchase = v;
+    });
+
+    setDup(newDup);
   };
 
-  // TODO: Validation
-  // TODO: Dup Item to Form
+  // TODO: Validation?
 
   return (
     <div className="container-fluid my-3">
       <Formik
-        initialValues={{
-          prefix: '',
-          suffix: '',
-          code: '',
-          amount: 1,
-          discountType: 'Percent',
-          discountAmount: 0,
-          redeemable: 0,
-          minPurchase: 0,
-          maxPurchase: 0,
-          description: '',
-          tickets: [],
-        }}
+        initialValues={
+          dup || {
+            prefix: '',
+            suffix: '',
+            code: '',
+            amount: 1,
+            discountType: 'Percent',
+            discountAmount: 0,
+            redeemable: 0,
+            minPurchase: 0,
+            maxPurchase: 0,
+            description: '',
+            tickets: [],
+          }
+        }
         onSubmit={onSubmit}
+        enableReinitialize
       >
         <Form>
           <div className="row">

@@ -41,6 +41,7 @@ const HEADERS = [
   'General Attendee (Online only) (Super Early Bird)', // 35
   'General Attendee (Online only) Early Bird', // 36
   'General Attendee (Online only)', // 37
+  'Expo Pass', // 38
 ];
 
 const generateRandomString = () => {
@@ -390,6 +391,7 @@ export default function App() {
                 </option>
                 <option value="28">Startup Kiosk (+2 tickets)</option>
                 <option value="25">Startup Online (with virtual booth)</option>
+                <option value="38">Expo Pass</option>
               </Field>
             </div>
           </div>
